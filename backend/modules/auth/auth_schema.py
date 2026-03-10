@@ -45,7 +45,7 @@ class LearningStats(BaseModel):
 class UserResponse(BaseModel):
     """Schema for user response (excludes sensitive data)"""
     id: str
-    username: str
+    name: str
     email: EmailStr
     profile_image: Optional[str] = None
     role: str = "student"

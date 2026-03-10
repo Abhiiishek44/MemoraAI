@@ -35,6 +35,7 @@ class AuthService:
         """
         try:
             # Check if user already exists
+
             existing_user = await mongodb.db.users.find_one({"email": user_data.email})
             if existing_user:
                 raise HTTPException(
@@ -44,24 +45,16 @@ class AuthService:
               
             # Hash password
             hashed_password = hash_password(user_data.password)
-            
+            print(user_data.name)
             # Prepare user document
             user_doc = {
                 "name": user_data.name,
                 "email": user_data.email,
                 "password": hashed_password,
-                "profile_image": None,
                 "role": "student",
-                "learning_stats": {
-                    "topics_learned": 0,
-                    "quizzes_taken": 0,
-                    "average_score": 0.0,
-                    "revision_completed": 0
-                },
                 "is_active": True,
                 "is_verified": False,
-                "created_at": datetime.utcnow(),
-                "updated_at": datetime.utcnow()
+                "created_at": datetime.utcnow()
             }
             
             # Insert user into database

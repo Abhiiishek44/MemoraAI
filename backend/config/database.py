@@ -58,7 +58,6 @@ async def create_indexes():
     try:
         # Users collection indexes
         await mongodb.db.users.create_index("email", unique=True)
-        await mongodb.db.users.create_index("username", unique=True)
         await mongodb.db.users.create_index("created_at")
         
         logger.info("Database indexes created successfully")

@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     
     # Database
     MONGODB_URL: str = "mongodb://admin:admin123@localhost:27017/?authSource=admin"
-    DATABASE_NAME: str = "MemoraAI"
+    DATABASE_NAME: str = "MemoraAI" 
     
     # CORS
     CORS_ORIGINS: list = ["*"]
@@ -32,9 +32,18 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: Optional[str] = None
     OPENAI_API_KEY: Optional[str] = None
     
+
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_PASSWORD: str | None = None
+
+    JWT_SECRET: str = "secret123"
+    JWT_REFRESH_SECRET: str = "refresh123"
+
     class Config:
         env_file = ".env"
         case_sensitive = True
+
 
 
 settings = Settings()

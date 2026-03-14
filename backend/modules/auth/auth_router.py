@@ -19,7 +19,6 @@ from modules.auth.auth_controller import (
 )
 from core.dependencies import get_current_user
 
-
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]

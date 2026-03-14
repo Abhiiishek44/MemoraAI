@@ -34,14 +34,6 @@ class UserLogin(BaseModel):
     password: str = Field(..., description="Password")
 
 
-class LearningStats(BaseModel):
-    """Schema for user learning statistics"""
-    topics_learned: int = 0
-    quizzes_taken: int = 0
-    average_score: float = 0.0
-    revision_completed: int = 0
-
-
 class UserResponse(BaseModel):
     """Schema for user response (excludes sensitive data)"""
     id: str
@@ -49,7 +41,6 @@ class UserResponse(BaseModel):
     email: EmailStr
     profile_image: Optional[str] = None
     role: str = "student"
-    learning_stats: LearningStats
     created_at: datetime
     updated_at: datetime
     

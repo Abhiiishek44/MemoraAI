@@ -6,12 +6,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import uvicorn
-
-from config.database import connect_to_mongodb, close_mongodb_connection
+from shared.config.database import connect_to_mongodb, close_mongodb_connection
 from core.config import settings
 from shared.utils.logger import logger
 from modules.auth.auth_router import router as auth_router
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -21,6 +19,7 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting RecallAI backend...")
     await connect_to_mongodb()
+    # await connect_redis()
     logger.info("RecallAI backend started successfully")
     
     yield
@@ -28,6 +27,7 @@ async def lifespan(app: FastAPI):
     # Shutdown
     logger.warning("Shutting down RecallAI backend...")
     await close_mongodb_connection()
+    # await disconnect_redis()
     logger.info("RecallAI backend shutdown complete")
 
 

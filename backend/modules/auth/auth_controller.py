@@ -16,15 +16,7 @@ auth_service = AuthService()
 
 
 async def register_user(data: UserRegister) -> Dict[str, Any]:
-    """
-    Controller for user registration.
     
-    Args:
-        data: User registration data
-        
-    Returns:
-        Registration response with user data and tokens
-    """
     try:
         result = await auth_service.register_user(data)
         return result
@@ -39,15 +31,7 @@ async def register_user(data: UserRegister) -> Dict[str, Any]:
 
 
 async def login_user(data: UserLogin) -> Dict[str, Any]:
-    """
-    Controller for user login.
     
-    Args:
-        data: User login credentials
-        
-    Returns:
-        Login response with user data and tokens
-    """
     try:
         result = await auth_service.login_user(data)
         return result
@@ -62,15 +46,7 @@ async def login_user(data: UserLogin) -> Dict[str, Any]:
 
 
 async def get_current_user_profile(user_id: str) -> Dict[str, Any]:
-    """
-    Controller to get current user profile.
-    
-    Args:
-        user_id: User ID from JWT token
-        
-    Returns:
-        User profile data
-    """
+   
     try:
         user = await auth_service.verify_token_and_get_user(user_id)
         return user

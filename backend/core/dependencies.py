@@ -17,18 +17,7 @@ security = HTTPBearer()
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ) -> dict:
-    """
-    Dependency to get current authenticated user from JWT token.
     
-    Args:
-        credentials: HTTP authorization credentials with bearer token
-        
-    Returns:
-        Current user data
-        
-    Raises:
-        HTTPException: If token is invalid or user not found
-    """
     try:
         # Decode token
         token = credentials.credentials
@@ -72,32 +61,13 @@ async def get_current_user(
 async def get_current_active_user(
     current_user: dict = Depends(get_current_user)
 ) -> dict:
-    """
-    Dependency to ensure current user is active.
-    
-    Args:
-        current_user: Current user from get_current_user dependency
-        
-    Returns:
-        Active user data
-        
-    Raises:
-        HTTPException: If user is inactive
-    """
+  
     # Additional checks can be added here
     return current_user
 
 
 def require_role(required_role: str):
-    """
-    Dependency factory to require specific user role.
-    
-    Args:
-        required_role: Required role name
-        
-    Returns:
-        Dependency function
-    """
+   
     async def role_checker(current_user: dict = Depends(get_current_user)) -> dict:
         user_role = current_user.get("role", "student")
         if user_role != required_role:

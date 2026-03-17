@@ -39,7 +39,7 @@ def create_topic(user_id, topic_name, description=None):
         "user_id": user_id,
         "topic_name": topic_name,
         "description": description,
-
+         
         "materials_count": 0,
         "flashcards_count": 0,
         "tests_count": 0,
@@ -75,7 +75,7 @@ def create_flashcard(user_id, topic_id, question, answer, difficulty):
         "difficulty": difficulty, # easy, medium, hard
         "ease_counter": 0,
         "is_learned": False,
-         "next_review": datetime,
+         "next_review": datetime.utcnow(),
     
         "created_at": datetime.utcnow(),
         "updated_at": datetime.utcnow()
@@ -86,11 +86,10 @@ def create_test(user_id, topic_id, questions):
     return {
         "user_id": user_id,
         "topic_id": topic_id,
-        "total_questions": len(questions),
-        "questions": questions, 
+        "total_questions": len(questions) if questions else 0,
+        "questions": questions,
         "duration_minutes": 10,
-        "questions":[],
-
+        "is_attempted": False,
         "created_at": datetime.utcnow(),
         "updated_at": datetime.utcnow()
     }

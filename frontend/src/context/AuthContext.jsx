@@ -24,8 +24,6 @@ export const AuthProvider = ({ children }) => {
                 }
             } catch (err) {
                 console.error('Failed to load user:', err);
-                localStorage.removeItem(ACCESS_TOKEN_KEY);
-                sessionStorage.removeItem(REFRESH_TOKEN_KEY);
             } finally {
                 setLoading(false);
             }

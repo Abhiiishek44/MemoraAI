@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAuth } from '../context/AuthContext';
 import { 
   BarChart3, 
   Flame, 
@@ -45,11 +46,12 @@ const topics = [
 ];
 
 export default function Dashboard() {
+  const { user } = useAuth();
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-end justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Welcome back, Jane 👋</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Welcome, {user?.name} 👋</h1>
           <p className="mt-2 text-gray-500">Here's an overview of your learning progress today.</p>
         </div>
         <Button className="gap-2">

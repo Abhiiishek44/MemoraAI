@@ -78,7 +78,7 @@ function Signup() {
                                         id="name"
                                         type="text"
                                         autoComplete="name"
-                                        placeholder="Alex Johnson"
+                                        placeholder="enter your name"
                                         className="pl-9"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
@@ -94,7 +94,7 @@ function Signup() {
                                         id="email"
                                         type="email"
                                         autoComplete="email"
-                                        placeholder="you@example.com"
+                                        placeholder="enter your email"
                                         className="pl-9"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}

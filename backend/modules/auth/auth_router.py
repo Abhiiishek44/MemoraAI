@@ -10,12 +10,14 @@ from modules.auth.auth_schema import (
     UserLogin, 
     UserResponse,
     RegisterResponse,
-    LoginResponse
+    LoginResponse,
+    RefreshRequest
 )
 from modules.auth.auth_controller import (
     register_user,
     login_user,
-    get_current_user_profile
+    refresh_token as refresh_token_controller,
+    logout_user as logout_user_controller
 )
 from core.dependencies import get_current_user
 
@@ -28,6 +30,7 @@ router = APIRouter(
 @router.post(
     "/register",
     status_code=status.HTTP_201_CREATED,
+    response_model=RegisterResponse,
     summary="Register a new user",
     description="Create a new user account with email and password"
 )
@@ -47,6 +50,7 @@ async def register(data: UserRegister) -> Dict[str, Any]:
 @router.post(
     "/login",
     status_code=status.HTTP_200_OK,
+    response_model=LoginResponse,
     summary="Login user",
     description="Authenticate user and receive access tokens"
 )
@@ -84,17 +88,14 @@ async def get_profile(current_user: dict = Depends(get_current_user)) -> Dict[st
     summary="Logout user",
     description="Logout current user (client-side token removal)"
 )
-async def logout(current_user: dict = Depends(get_current_user)) -> Dict[str, str]:
+async def logout(data: RefreshRequest, current_user: dict = Depends(get_current_user)) -> Dict[str, str]:
     """
     Logout user.
     
     Since we're using JWT tokens, logout is handled client-side by removing the token.
     This endpoint verifies the token is valid before confirming logout.
     """
-    return {
-        "message": "Successfully logged out",
-        "detail": "Please remove the token from client storage"
-    }
+    return await logout_user_controller(current_user["id"], data.refresh_token)
 
 
 @router.get(
@@ -113,3 +114,15 @@ async def verify_token(current_user: dict = Depends(get_current_user)) -> Dict[s
         "valid": True,
         "user": current_user
     }
+
+
+@router.post(
+    "/refresh",
+    status_code=status.HTTP_200_OK,
+    response_model=LoginResponse,
+    summary="Refresh access token",
+    description="Use a refresh token to obtain new access and refresh tokens"
+)
+async def refresh_token(data: RefreshRequest) -> Dict[str, Any]:
+    """Refresh tokens using a valid refresh token."""
+    return await refresh_token_controller(data)

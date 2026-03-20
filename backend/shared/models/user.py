@@ -13,7 +13,8 @@ def create_user(name: str, email: str, password_hash: str):
     return {
         "name": name,
         "email": email,
-        "password_hash": password_hash,
+        # store hashed password under a consistent key used by auth services
+        "password": password_hash,
         "role": "student",
 
         "profile_image": None,
@@ -28,6 +29,7 @@ def create_user(name: str, email: str, password_hash: str):
         "is_active": True,
         # "email_verified": False,
 
+        "refresh_token": None,
         # timestamps
         "created_at": datetime.utcnow(),
         "updated_at": datetime.utcnow(),

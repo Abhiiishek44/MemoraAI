@@ -71,6 +71,11 @@ class RegisterResponse(BaseModel):
     token_type: str = "bearer"
 
 
+class RefreshRequest(BaseModel):
+    """Schema for requesting a new token using a refresh token"""
+    refresh_token: str
+
+
 class TokenPayload(BaseModel):
     """Schema for JWT token payload"""
     sub: str  # Subject (user_id)

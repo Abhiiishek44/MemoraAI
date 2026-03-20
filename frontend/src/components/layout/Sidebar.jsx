@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
-
+import { useAuth } from '../../context/AuthContext';
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
   { icon: UploadCloud, label: 'Upload Study Material', path: '/upload' },
@@ -24,7 +24,12 @@ const navItems = [
   { icon: PieChart, label: 'Progress', path: '/progress' },
 ];
 
+
+
+
 export function Sidebar() {
+  const { logout, user } = useAuth();
+
   return (
     <aside className="fixed left-0 flex h-screen w-64 flex-col border-r border-gray-100 bg-white px-4 py-6 shadow-sm">
       <div className="mb-8 flex items-center justify-center gap-2 px-2">
@@ -78,11 +83,11 @@ export function Sidebar() {
             JS
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-medium text-gray-900">Jane Student</span>
-            <span className="text-xs text-gray-500">jane@example.com</span>
+            <span className="text-sm font-medium text-gray-900">{user?.name}</span>
+            <span className="text-xs text-gray-500">{user?.email}</span>
           </div>
         </div>
-        <Button variant="ghost" className="w-full justify-start text-red-600 hover:bg-red-50 hover:text-red-700 px-3">
+        <Button onClick={logout} variant="ghost" className="w-full justify-start text-red-600 hover:bg-red-50 hover:text-red-700 px-3">
           <LogOut className="mr-3 h-5 w-5" />
           Logout
         </Button>

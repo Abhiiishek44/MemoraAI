@@ -33,9 +33,9 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: Optional[str] = None
     
 
-    REDIS_HOST: str = "localhost"
-    REDIS_PORT: int = 6379
-    REDIS_PASSWORD: str | None = None
+    # REDIS_HOST: str = "localhost"
+    # REDIS_PORT: int = 6379
+    # REDIS_PASSWORD: str | None = None
 
     JWT_SECRET: str = "secret123"
     JWT_REFRESH_SECRET: str = "refresh123"

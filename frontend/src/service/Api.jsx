@@ -22,6 +22,8 @@ export const updateTopic = async (topicId, data) => axiosInstance.patch(`/topics
 
 export const deleteTopic = async (topicId) => axiosInstance.delete(`/topics/${topicId}`);
 
+export const uploadTopic = async (topicId, data) => axiosInstance.post(`/topics/${topicId}/upload`, data);
+
 export const uploadTopicMaterial = async (topicId, formData) => {
     return axiosInstance.post(`/topics/${topicId}/upload`, formData, {
         headers: {

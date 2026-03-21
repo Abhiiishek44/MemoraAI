@@ -3,6 +3,7 @@ Production-Ready MongoDB Schema for Study Platform
 """
 
 from datetime import datetime
+import string
 from bson import ObjectId
 from typing import List, Optional
 
@@ -69,29 +70,47 @@ def create_topic(user_id: str, topic_name: str, description: Optional[str] = Non
 # =========================
 # STUDY MATERIAL
 # =========================
-def create_study_material(
+
+
+def create_material(
     user_id: str,
     topic_id: str,
-    material_type: str,  # text | pdf | link
-    content: Optional[str] = None,
-    file_url: Optional[str] = None,
-    source_url: Optional[str] = None
+    material_type: str,   # text | document | url
+    content: str = None,
+    file_name: str = None,
+    file_path: str = None,
+    source_url: str = None
 ):
     return {
         "user_id": ObjectId(user_id),
         "topic_id": ObjectId(topic_id),
 
-        "material_type": material_type,
-        "content": content,       # for text
-        "file_url": file_url,     # for pdf/file
-        "source_url": source_url, # for links
+        # Material Type
+        "material_type": material_type,  # text | document | url
 
-        "is_processed": False,  # for AI processing
+        # Input Sources
+        "content": content,          # for text
+        "file_name": file_name,      # original file name
+        "file_path": file_path,      # stored file path
+        "source_url": source_url,    # for URL
 
+        # AI Processing
+        "extracted_text": None,
+        "chunks_count": 0,
+
+        # Processing Status
+        "status": "uploaded",  # uploaded | processing | completed | failed
+        "error_message": None,
+
+        # AI Results Flags
+        "summary_generated": False,
+        "mcq_generated": False,
+        "flashcard_generated": False,
+
+        # Timestamps
         "created_at": datetime.utcnow(),
         "updated_at": datetime.utcnow()
     }
-
 
 # =========================
 # FLASHCARD (Spaced Repetition Ready)
@@ -99,6 +118,8 @@ def create_study_material(
 def create_flashcard(
     user_id: str,
     topic_id: str,
+    material_id: str,
+    chunk_index: int,
     question: str,
     answer: str,
     difficulty: str  # easy | medium | hard
@@ -106,26 +127,69 @@ def create_flashcard(
     return {
         "user_id": ObjectId(user_id),
         "topic_id": ObjectId(topic_id),
+        "material_id": ObjectId(material_id),
+        "chunk_index": chunk_index,
 
         "question": question,
         "answer": answer,
         "difficulty": difficulty,
 
-        # spaced repetition system
+        # Spaced Repetition System (SRS)
         "ease_factor": 2.5,
         "interval": 1,
         "ease_counter": 0,
         "review_count": 0,
         "last_reviewed": None,
-        "is_deleted": False,
-
-        "is_learned": False,
         "next_review": datetime.utcnow(),
+
+        # Learning state
+        "is_learned": False,
+        "is_deleted": False,
 
         "created_at": datetime.utcnow(),
         "updated_at": datetime.utcnow()
     }
 
+
+
+
+# =========================
+# MCQ
+# =========================
+
+def create_mcq(
+    user_id: str,
+    topic_id: str,
+    material_id: str,
+    chunk_index: int,
+    question: str,
+    options: list,
+    answer: str,
+    explanation: str = None,
+    difficulty: str = "medium"
+):
+    return {
+        "user_id": ObjectId(user_id),
+        "topic_id": ObjectId(topic_id),
+        "material_id": ObjectId(material_id),
+        "chunk_index": chunk_index,
+
+        "question": question,
+        "options": options,  # ["A", "B", "C", "D"]
+        "answer": answer,
+        "explanation": explanation,
+        "difficulty": difficulty,
+
+        # User performance tracking
+        "times_attempted": 0,
+        "times_correct": 0,
+        "times_wrong": 0,
+
+        "is_deleted": False,
+
+        "created_at": datetime.utcnow(),
+        "updated_at": datetime.utcnow()
+    }
 
 # =========================
 # TEST

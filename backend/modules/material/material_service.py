@@ -1,8 +1,9 @@
 import os
 import uuid
-from modules.material.material_schema import MaterialCreate
+from datetime import datetime
+from modules.material.material_schema import MaterialCreate, MaterialResponse
 from shared.config.database import mongodb
-from app.services.ai_background_tasks import process_material
+from modules.ai.ai_background_pipline import process_material_pipeline as process_material
 from shared.utils.logger import logger
 
 UPLOAD_DIR = "uploads"
@@ -27,7 +28,11 @@ class MaterialService:
                     content=text
                 )
 
-                result = await mongodb.materials.insert_one(doc)
+                doc_dict = doc.model_dump()
+                doc_dict["created_at"] = doc_dict.get("created_at", datetime.utcnow())
+                doc_dict["updated_at"] = doc_dict.get("updated_at", datetime.utcnow())
+
+                result = await mongodb.db.materials.insert_one(doc_dict)
                 material_id = str(result.inserted_id)
                 materials_created.append(material_id)
 
@@ -46,7 +51,11 @@ class MaterialService:
                     source_url=url
                 )
 
-                result = await mongodb.materials.insert_one(doc)
+                doc_dict = doc.model_dump()
+                doc_dict["created_at"] = doc_dict.get("created_at", datetime.utcnow())
+                doc_dict["updated_at"] = doc_dict.get("updated_at", datetime.utcnow())
+
+                result = await mongodb.db.materials.insert_one(doc_dict)
                 material_id = str(result.inserted_id)
                 materials_created.append(material_id)
 
@@ -75,7 +84,11 @@ class MaterialService:
                     file_path=file_path
                 )
 
-                result = await mongodb.materials.insert_one(doc)
+                doc_dict = doc.model_dump()
+                doc_dict["created_at"] = doc_dict.get("created_at", datetime.utcnow())
+                doc_dict["updated_at"] = doc_dict.get("updated_at", datetime.utcnow())
+
+                result = await mongodb.db.materials.insert_one(doc_dict)
                 material_id = str(result.inserted_id)
                 materials_created.append(material_id)
 
@@ -90,3 +103,44 @@ class MaterialService:
         except Exception as e:
             logger.error(f"Error uploading material: {str(e)}")
             raise Exception("Failed to upload material")
+        
+    @staticmethod
+    async def get_materials_by_topic(topic_id: str, user_id: str):
+        try:
+            materials = await mongodb.db.materials.find({"topic_id": topic_id, "user_id": user_id}).to_list(length=100)
+
+            result = []
+            for material in materials:
+                material_type = material.get("material_type")
+                file_url = None
+                source_url = None
+                text_preview = None
+
+                if material_type == "document":
+                       file_url = f"/uploads/topic_{topic_id}/{material.get('file_name')}"
+                elif material_type == "url":
+                    source_url = material.get("source_url")
+                elif material_type == "text":
+                    text_preview = material.get("content")[:100] + "..." if len(material.get("content")) > 100 else material.get("content")
+                 
+                material_data = {
+                "_id": str(material["_id"]),
+                "title": material.get("title"),
+                "material_type": material.get("material_type"),
+                "processing_status": material.get("processing_status"),
+                "file_url": file_url,
+                "source_url": source_url,
+                "text_preview": text_preview,
+                "chunks_count": material.get("chunks_count", 0),
+                "mcq_count": material.get("mcq_count", 0),
+                "flashcard_count": material.get("flashcard_count", 0),
+                "summary": material.get("summary"),
+                "created_at": material.get("created_at"),
+                "updated_at": material.get("updated_at"),
+            } 
+                result.append(material_data)
+            return result
+
+        except Exception as e:
+            logger.error(f"Error fetching materials: {str(e)}")
+            raise Exception("Failed to fetch materials")

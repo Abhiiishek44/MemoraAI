@@ -11,7 +11,7 @@ from core.config import settings
 from shared.utils.logger import logger
 from modules.auth.auth_router import router as auth_router
 from modules.topic.topic_router import router as topic_router
-
+from modules.material.material_routes import router as material_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
@@ -56,6 +56,7 @@ app.add_middleware(
 # Include routers
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(topic_router, prefix="/api/v1")
+app.include_router(material_router, prefix="/api/v1")
 
 
 # Root endpoint

@@ -15,6 +15,7 @@ class MaterialBase(BaseModel):
     material_type: MaterialType
 
     title: Optional[str] = None
+    processing_status: MaterialStatus = "uploaded"
 
     # Source fields
     content: Optional[str] = None      # for text
@@ -44,17 +45,16 @@ class MaterialResponse(MaterialBase):
 
     extracted_text: Optional[str] = None
     chunks_count: int = 0
-
-    status: MaterialStatus
+    title: Optional[str] = None
+    material_type: MaterialType
+    processing_status: MaterialStatus
     error_message: Optional[str] = None
-
-    summary_generated: bool = False
-    mcq_generated: bool = False
-    flashcard_generated: bool = False
-
+    file_url: Optional[str] = None  # URL to access the uploaded file (for documents)
+    source_url: Optional[str] = None  # URL to access the original source (for URLs)
+    text_preview: Optional[str] = None  # Preview of the text content (for text materials)
     mcq_count: int = 0
     flashcard_count: int = 0
-
+    summary: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 

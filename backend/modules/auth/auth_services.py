@@ -29,10 +29,10 @@ class AuthService:
                 )
             
             # Hash password
-            hashed_password = hash_password(user_data.password)
+            password = hash_password(user_data.password)
             
             # Create user document
-            user_doc = create_user(user_data.name, user_data.email, hashed_password)
+            user_doc = create_user(user_data.name, user_data.email, password)
 
             # Insert into database
             result = await mongodb.db.users.insert_one(user_doc)

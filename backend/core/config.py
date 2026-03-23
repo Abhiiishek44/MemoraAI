@@ -16,13 +16,13 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     
     # Security
-    SECRET_KEY: str = "your-secret-key-change-this-in-production-use-openssl-rand-hex-32"
+    SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     
     # Database
-    MONGODB_URL: str = "mongodb://admin:admin123@localhost:27017/?authSource=admin"
+    MONGODB_URL: str
     DATABASE_NAME: str = "MemoraAI" 
     
     # CORS
@@ -37,8 +37,8 @@ class Settings(BaseSettings):
     # REDIS_PORT: int = 6379
     # REDIS_PASSWORD: str | None = None
 
-    JWT_SECRET: str = "secret123"
-    JWT_REFRESH_SECRET: str = "refresh123"
+    JWT_SECRET: str
+    JWT_REFRESH_SECRET: str
 
     class Config:
         env_file = ".env"

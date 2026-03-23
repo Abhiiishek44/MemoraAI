@@ -16,7 +16,7 @@ def ensure_collection():
         client.create_collection(
             collection_name=collection_name,
             vectors_config=rest.VectorParams(
-                size=768,  # IMPORTANT: match embedding size
+                size=768,  # Gemini embedding size
                 distance=rest.Distance.COSINE
             ),
             on_disk_payload=True
@@ -40,6 +40,11 @@ async def store_vector(chunks, material_id, topic_id):
                 print("Embedding failed for chunk:", i)
                 continue
 
+            # Ensure embedding size = 768
+            if len(embedding) != 768:
+                print("Invalid embedding size for chunk:", i)
+                continue
+
             point_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, f"{material_id}_{i}"))
 
             point = rest.PointStruct(
@@ -58,6 +63,7 @@ async def store_vector(chunks, material_id, topic_id):
         except Exception as e:
             print("Error generating embedding:", e)
 
+    # Batch upload
     if points:
         client.upsert(
             collection_name=collection_name,
@@ -74,13 +80,15 @@ def delete_vector(material_id):
 
     client.delete(
         collection_name=collection_name,
-        points_selector=rest.Filter(
-            must=[
-                rest.FieldCondition(
-                    key="material_id",
-                    match=rest.MatchValue(value=material_id)
-                )
-            ]
+        points_selector=rest.FilterSelector(
+            filter=rest.Filter(
+                must=[
+                    rest.FieldCondition(
+                        key="material_id",
+                        match=rest.MatchValue(value=material_id)
+                    )
+                ]
+            )
         )
     )
 

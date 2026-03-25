@@ -13,7 +13,8 @@ async def get_embedding(text: str):
             text=text
         )
 
-        return response.embedding.values
+        retu
+        print("Embedding response:", response)rn response.embedding.values
 
     except Exception as e:
         print("Embedding error:", e)

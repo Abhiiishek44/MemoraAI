@@ -5,7 +5,10 @@ import fitz
 class TextExtractor:
     @staticmethod
     async def extract_text_from_url(url):
-        async with httpx.AsyncClient() as client:
+        if not url.startswith("http://") and not url.startswith("https://"):
+            url = "https://" + url
+            
+        async with httpx.AsyncClient(follow_redirects=True) as client:
             response = await client.get(url)
             soup = BeautifulSoup(response.text, "html.parser")
             return soup.get_text()

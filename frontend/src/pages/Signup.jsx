@@ -69,7 +69,7 @@ function Signup() {
                             </div>
                         )}
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
+                        <form id="signup-form" onSubmit={handleSubmit} className="space-y-5">
                             <div className="space-y-2">
                                 <Label htmlFor="name" className="text-slate-900">Full name</Label>
                                 <div className="relative">
@@ -169,13 +169,17 @@ function Signup() {
                             </li>
                         </ul>
 
-                        <div className="flex items-center justify-between text-sm text-slate-700 pt-4">
-                            <Link to="/login" className="inline-flex items-center gap-2 text-blue-700 hover:text-blue-800 font-medium">
-                                <ArrowLeft className="h-4 w-4" /> Back to login
-                            </Link>
-                            <div className="inline-flex items-center gap-2 rounded-full bg-slate-900 text-white px-3 py-1 text-xs font-medium shadow-sm">
-                                Get started <ArrowRight className="h-4 w-4" />
-                            </div>
+                        <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                            <Button asChild variant="link" className="h-auto p-0 text-blue-700 hover:text-blue-800">
+                                <Link to="/login" className="inline-flex items-center gap-2 font-medium">
+                                    <ArrowLeft className="h-4 w-4" /> Already have an account? Sign in
+                                </Link>
+                            </Button>
+                            <Button asChild size="sm" className="gap-2">
+                                <a href="#signup-form">
+                                    Get started now <ArrowRight className="h-4 w-4" />
+                                </a>
+                            </Button>
                         </div>
                     </div>
                 </div>

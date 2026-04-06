@@ -5,7 +5,7 @@ from modules.material.material_schema import MaterialCreate, MaterialResponse
 from shared.config.database import mongodb
 from modules.ai.ai_background_pipline import process_material_pipeline as process_material
 from shared.utils.logger import logger
-
+from bson import ObjectId
 UPLOAD_DIR = "uploads"
 
 
@@ -144,3 +144,24 @@ class MaterialService:
         except Exception as e:
             logger.error(f"Error fetching materials: {str(e)}")
             raise Exception("Failed to fetch materials")
+    
+    @staticmethod
+    async def delete_material(material_id: str):
+        try:
+            material = await mongodb.db.materials.find_one({"_id": ObjectId(material_id)})
+
+            if not material:
+                raise Exception("Material not found")
+
+            if material.get("material_type") == "document":
+                file_path = material.get("file_path")
+                if file_path and os.path.exists(file_path):
+                    os.remove(file_path)
+
+            await mongodb.db.materials.delete_one({"_id": ObjectId(material_id)})
+            return {"message": "Material deleted successfully"}
+
+        except Exception as e:
+            logger.error(f"Error deleting material: {str(e)}")
+            raise Exception("Failed to delete material")    
+        

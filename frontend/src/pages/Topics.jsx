@@ -278,9 +278,6 @@ export default function Topics() {
           <p className="mt-2 text-gray-500">Manage your isolated learning workspaces.</p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => navigate('/upload')} variant="outline" className="gap-2">
-            Upload Material
-          </Button>
           <Button onClick={() => { setActionError(null); setShowCreate(true); }} className="gap-2">
             <Plus className="h-4 w-4" /> New Topic
           </Button>
@@ -378,18 +375,6 @@ export default function Topics() {
                     <Library className="h-4 w-4 text-gray-400" />
                     <span><strong className="text-gray-900">{topic.tests ?? 0}</strong> Tests</span>
                   </div>
-                </div>
-                <div className="mt-4 flex justify-end">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/upload?topicId=${topicId(topic)}`);
-                    }}
-                  >
-                    Add Material
-                  </Button>
                 </div>
               </CardContent>
             </Card>

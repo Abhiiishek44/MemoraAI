@@ -24,4 +24,11 @@ class MaterialController:
         except Exception as e:
             logger.error(f"Get materials error: {str(e)}")
             raise HTTPException(status_code=500, detail="Failed to get materials")  
-        
+    
+    # async deleteMaterial(material_id: str):
+    #     try:
+    #         return await MaterialService.delete_material(material_id)
+    #     except Exception as e:
+    #         logger.error(f"Delete material error: {str(e)}")
+    #         raise HTTPException(status_code=500, detail="Failed to delete material")  
+    

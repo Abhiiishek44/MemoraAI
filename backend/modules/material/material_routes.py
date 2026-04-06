@@ -1,8 +1,18 @@
-from fastapi import Depends, APIRouter, UploadFile, File, Form, BackgroundTasks
+from fastapi import Depends, APIRouter, UploadFile, File, Form, BackgroundTasks, HTTPException, status
 from typing import Optional
 from modules.material.material_controller import MaterialController
 from core.dependencies import get_current_active_user
 router = APIRouter(prefix="/topics/{topic_id}/materials", tags=["Materials"])
+
+
+def _extract_user_id(current_user: dict) -> str:
+    user_id = current_user.get("id") or current_user.get("_id")
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authenticated user payload",
+        )
+    return str(user_id)
 
 
 @router.post("/")
@@ -14,7 +24,7 @@ async def upload_material(
     url: Optional[str] = Form(None),
     file: Optional[UploadFile] = File(None),
 ):
-    user_id = str(current_user["id"])
+    user_id = _extract_user_id(current_user)
     return await MaterialController.upload_material(
         topic_id, user_id, text, url, file, background_tasks
     )
@@ -22,7 +32,7 @@ async def upload_material(
 
 @router.get("/")
 async def get_materials(topic_id: str, current_user: dict = Depends(get_current_active_user)):
-    user_id = str(current_user["_id"])
+    user_id = _extract_user_id(current_user)
     return await MaterialController.get_materials(topic_id, user_id)
 
 

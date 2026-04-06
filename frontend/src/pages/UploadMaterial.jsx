@@ -5,15 +5,14 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Label } from '../components/ui/label';
-import { cn } from '../lib/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { uploadTopicMaterial } from '../service/Api';
+import { uploadMaterial } from '../shared/api/endpoints';
 
 function readTopics() {
   try {
     const raw = localStorage.getItem('memora_topics');
     return raw ? JSON.parse(raw) : [];
-  } catch (e) {
+  } catch {
     return [];
   }
 }
@@ -51,12 +50,6 @@ export default function UploadMaterial() {
   const removeUrl = (i) => setUrls((s) => s.filter((_, idx) => idx !== i));
   const updateUrl = (i, v) => setUrls((s) => s.map((val, idx) => (idx === i ? v : val)));
 
-  const handleFileChange = (e) => {
-    const incoming = Array.from(e.target.files || []);
-    // store minimal metadata for frontend demo
-    setFiles((s) => [...s, ...incoming.map((f) => ({ name: f.name, size: f.size, type: f.type, obj: f }))]);
-  };
-
   const removeFile = (idx) => setFiles((s) => s.filter((_, i) => i !== idx));
 
   const validate = () => {
@@ -69,17 +62,25 @@ export default function UploadMaterial() {
     setIsProcessing(true);
 
     try {
-      const formData = new FormData();
-      formData.append('text_content', textContent);
-      urls.filter(u => u.trim()).forEach(url => {
-        formData.append('urls', url);
-      });
-      files.forEach(file => {
-        formData.append('files', file.obj || file); // assuming file state has file objects
-      });
+      const validText = textContent.trim();
+      const validUrls = urls.map((u) => u.trim()).filter(Boolean);
+      const validFiles = files.map((f) => f.obj || f).filter(Boolean);
 
-      const response = await uploadTopicMaterial(selectedTopicId, formData);
-      const updatedTopic = response.data;
+      if (!validText && validUrls.length === 0 && validFiles.length === 0) {
+        throw new Error('Please provide at least one material input (text, URL, or file).');
+      }
+
+      if (validText) {
+        await uploadMaterial(selectedTopicId, { text: validText });
+      }
+
+      for (const url of validUrls) {
+        await uploadMaterial(selectedTopicId, { url });
+      }
+
+      if (validFiles.length > 0) {
+        await Promise.all(validFiles.map((file) => uploadMaterial(selectedTopicId, { file })));
+      }
       
       const currentTopics = readTopics();
       const topicIndex = currentTopics.findIndex(t => t.id === selectedTopicId);

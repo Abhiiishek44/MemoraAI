@@ -1,14 +1,8 @@
 from typing import List, Dict, Any
-from fastapi import APIRouter, Depends, status, HTTPException, File, UploadFile, Form
+from fastapi import APIRouter, Depends, status
 from core.dependencies import get_current_user
 from modules.topic.topic_schema import TopicCreate, TopicUpdate, TopicResponse
-from modules.topic.topic_controller import (
-    create_topic_controller,
-    get_topics_controller,
-    get_topic_controller,
-    update_topic_controller,
-    delete_topic_controller
-)
+from modules.topic.topic_services import TopicService
 
 router = APIRouter(prefix="/topics", tags=["Topics"])
 
@@ -24,7 +18,7 @@ async def create_topic(
 ) -> TopicResponse:
     """Create a new topic workspace"""
     user_id = str(current_user.get("_id") or current_user.get("id"))
-    return await create_topic_controller(user_id, topic)
+    return await TopicService.create_topic(user_id, topic)
 
 @router.get(
     "/",
@@ -38,7 +32,7 @@ async def get_topics(
 ) -> List[TopicResponse]:
     """Get all topics for the current user"""
     user_id = str(current_user.get("_id") or current_user.get("id"))
-    return await get_topics_controller(user_id, skip, limit)
+    return await TopicService.get_topics(user_id, skip, limit)
 
 @router.get(
     "/{topic_id}",
@@ -51,7 +45,7 @@ async def get_topic(
 ) -> TopicResponse:
     """Get a specific topic by ID"""
     user_id = str(current_user.get("_id") or current_user.get("id"))
-    return await get_topic_controller(user_id, topic_id)
+    return await TopicService.get_topic_by_id(user_id, topic_id)
 
 @router.patch(
     "/{topic_id}",
@@ -65,7 +59,7 @@ async def update_topic(
 ) -> TopicResponse:
     """Update a specific topic"""
     user_id = str(current_user.get("_id") or current_user.get("id"))
-    return await update_topic_controller(user_id, topic_id, topic_update)
+    return await TopicService.update_topic(user_id, topic_id, topic_update)
 
 @router.delete(
     "/{topic_id}",
@@ -78,4 +72,5 @@ async def delete_topic(
 ) -> Dict[str, Any]:
     """Delete a specific topic"""
     user_id = str(current_user.get("_id") or current_user.get("id"))
-    return await delete_topic_controller(user_id, topic_id)
+    await TopicService.delete_topic(user_id, topic_id)
+    return {"status": "success", "message": "Topic deleted successfully"}

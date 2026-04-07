@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 from modules.material.material_schema import MaterialCreate, MaterialResponse
 from shared.config.database import mongodb
-from modules.ai.ai_background_pipline import process_material_pipeline as process_material
+from modules.pipeline.ai_background_pipline import process_material_pipeline as process_material
 from shared.utils.logger import logger
 from bson import ObjectId
 UPLOAD_DIR = "uploads"

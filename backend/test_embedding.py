@@ -1,5 +1,5 @@
 import asyncio
-from modules.ai.embedding import get_embedding
+from modules.pipeline.embedding import get_embedding
 
 async def main():
     emb = await get_embedding("test")

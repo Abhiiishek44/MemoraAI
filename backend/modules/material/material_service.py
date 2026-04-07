@@ -163,5 +163,114 @@ class MaterialService:
 
         except Exception as e:
             logger.error(f"Error deleting material: {str(e)}")
-            raise Exception("Failed to delete material")    
+            raise Exception("Failed to delete material")
+
+    @staticmethod
+    async def get_material(material_id: str):
+        try:
+            if not ObjectId.is_valid(material_id):
+                raise Exception("Invalid material id")
+
+            material = await mongodb.db.materials.find_one({"_id": ObjectId(material_id)})
+            if not material:
+                raise Exception("Material not found")
+
+            material_type = material.get("material_type")
+            file_url = None
+            source_url = None
+            text_preview = None
+
+            if material_type == "document":
+                file_url = f"/uploads/topic_{material.get('topic_id')}/{material.get('file_name')}"
+            elif material_type == "url":
+                source_url = material.get("source_url")
+            elif material_type == "text":
+                content = material.get("content") or ""
+                text_preview = content[:100] + "..." if len(content) > 100 else content
+
+            return {
+                "_id": str(material["_id"]),
+                "title": material.get("title"),
+                "material_type": material_type,
+                "processing_status": material.get("processing_status"),
+                "file_url": file_url,
+                "source_url": source_url,
+                "text_preview": text_preview,
+                "chunks_count": material.get("chunks_count", 0),
+                "mcq_count": material.get("mcq_count", 0),
+                "flashcard_count": material.get("flashcard_count", 0),
+                "summary": material.get("summary"),
+                "created_at": material.get("created_at"),
+                "updated_at": material.get("updated_at"),
+                "error_message": material.get("error_message"),
+            }
+        except Exception as e:
+            logger.error(f"Error fetching material: {str(e)}")
+            raise Exception("Failed to fetch material")
+
+    @staticmethod
+    async def get_status(material_id: str):
+        try:
+            if not ObjectId.is_valid(material_id):
+                raise Exception("Invalid material id")
+
+            material = await mongodb.db.materials.find_one(
+                {"_id": ObjectId(material_id)},
+                {
+                    "processing_status": 1,
+                    "error_message": 1,
+                    "chunks_count": 1,
+                    "mcq_count": 1,
+                    "flashcard_count": 1,
+                    "updated_at": 1,
+                },
+            )
+
+            if not material:
+                raise Exception("Material not found")
+
+            return {
+                "material_id": material_id,
+                "processing_status": material.get("processing_status"),
+                "error_message": material.get("error_message"),
+                "chunks_count": material.get("chunks_count", 0),
+                "mcq_count": material.get("mcq_count", 0),
+                "flashcard_count": material.get("flashcard_count", 0),
+                "updated_at": material.get("updated_at"),
+            }
+        except Exception as e:
+            logger.error(f"Error fetching material status: {str(e)}")
+            raise Exception("Failed to fetch material status")
+
+    @staticmethod
+    async def reprocess_material(material_id: str, background_tasks):
+        try:
+            if not ObjectId.is_valid(material_id):
+                raise Exception("Invalid material id")
+
+            material = await mongodb.db.materials.find_one({"_id": ObjectId(material_id)})
+            if not material:
+                raise Exception("Material not found")
+
+            await mongodb.db.materials.update_one(
+                {"_id": ObjectId(material_id)},
+                {
+                    "$set": {
+                        "processing_status": "processing",
+                        "error_message": None,
+                        "updated_at": datetime.utcnow(),
+                    }
+                },
+            )
+
+            background_tasks.add_task(process_material, material_id)
+
+            return {
+                "message": "Material reprocessing started",
+                "material_id": material_id,
+                "processing_status": "processing",
+            }
+        except Exception as e:
+            logger.error(f"Error reprocessing material: {str(e)}")
+            raise Exception("Failed to reprocess material")
         

@@ -13,18 +13,15 @@ from modules.auth.auth_schema import (
     LoginResponse,
     RefreshRequest
 )
-from modules.auth.auth_controller import (
-    register_user,
-    login_user,
-    refresh_token as refresh_token_controller,
-    logout_user as logout_user_controller
-)
+from modules.auth.auth_services import AuthService
 from core.dependencies import get_current_user
 
 router = APIRouter(
     prefix="/auth",
     tags=["Authentication"]
 )
+
+auth_service = AuthService()
 
 
 @router.post(
@@ -44,7 +41,7 @@ async def register(data: UserRegister) -> Dict[str, Any]:
     
     Returns user data with access and refresh tokens.
     """
-    return await register_user(data)
+    return await auth_service.register_user(data)
 
 
 @router.post(
@@ -63,7 +60,7 @@ async def login(data: UserLogin) -> Dict[str, Any]:
     
     Returns user data with access and refresh tokens.
     """
-    return await login_user(data)
+    return await auth_service.login_user(data)
 
 
 @router.get(
@@ -95,7 +92,8 @@ async def logout(data: RefreshRequest, current_user: dict = Depends(get_current_
     Since we're using JWT tokens, logout is handled client-side by removing the token.
     This endpoint verifies the token is valid before confirming logout.
     """
-    return await logout_user_controller(current_user["id"], data.refresh_token)
+    user_id = str(current_user.get("id") or current_user.get("_id"))
+    return await auth_service.logout_user(user_id, data.refresh_token)
 
 
 @router.get(
@@ -125,4 +123,4 @@ async def verify_token(current_user: dict = Depends(get_current_user)) -> Dict[s
 )
 async def refresh_token(data: RefreshRequest) -> Dict[str, Any]:
     """Refresh tokens using a valid refresh token."""
-    return await refresh_token_controller(data)
+    return await auth_service.refresh_access_token(data.refresh_token)

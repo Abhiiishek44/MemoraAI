@@ -4,7 +4,7 @@ from typing import Dict, List, Optional
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as rest
 
-from modules.ai.embedding import EMBEDDING_DIM
+from modules.pipeline.embedding import EMBEDDING_DIM
 from shared.utils.logger import logger
 
 collection_name = "materials"

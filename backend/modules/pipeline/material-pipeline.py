@@ -2,11 +2,11 @@ from datetime import datetime
 from bson import ObjectId
 from shared.config.database import mongodb
 from shared.utils.logger import logger
-from modules.ai.text_extraction import TextExtractor
-from modules.ai.chunking import chunk_text
-from modules.ai.embedding import get_embedding
-from modules.ai.vector_store import store_vector, delete_vector
-from modules.ai.generation import generate_summary, generate_mcqs, generate_flashcards
+from modules.pipeline.text_extraction import TextExtractor
+from modules.pipeline.chunking import chunk_text
+from modules.pipeline.embedding import get_embedding
+from modules.pipeline.vector_store import store_vector, delete_vector
+from modules.pipeline.generation import generate_summary, generate_mcqs, generate_flashcards
 
 
 async def process_material_pipeline(material_id: str):
